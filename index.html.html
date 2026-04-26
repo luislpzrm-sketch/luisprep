@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Luis Prep">
+<meta name="theme-color" content="#080808">
+<title>Luis Prep Coach</title>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;margin:0;padding:0}
+html,body{height:100%;background:#080808;font-family:'Arial Narrow',Arial,sans-serif;color:#f0f0f0}
+body{max-width:480px;margin:0 auto;display:flex;flex-direction:column}
+input,textarea{outline:none;font-family:inherit}
+::-webkit-scrollbar{display:none}
+#app{flex:1;overflow-y:auto;padding:14px;padding-bottom:84px}
+#header{background:#111;border-bottom:2px solid #facc15;padding:12px 16px 10px}
+#nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;background:#0d0d0d;border-top:1px solid #222;display:flex;z-index:200}
+.nb{flex:1;background:none;border:none;padding:10px 0 8px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;font-family:inherit}
+.ni{font-size:19px}
+.nl{font-size:9px;color:#444;font-weight:400}
+.nd{width:18px;height:2px;background:#facc15;border-radius:1px;opacity:0;margin-top:1px}
+.nb.on .nl{color:#facc15;font-weight:700}
+.nb.on .nd{opacity:1}
+.stitle{font-size:15px;font-weight:900;letter-spacing:1px;margin-bottom:12px;border-bottom:2px solid #facc15;padding-bottom:5px}
+.lbl{font-size:10px;color:#444;letter-spacing:2px;margin-bottom:4px}
+.ifield{width:100%;background:#111;border:1px solid #222;border-radius:8px;color:#f0f0f0;padding:10px 12px;font-size:14px;font-family:inherit}
+.card{background:#111;border:1px solid #1e1e1e;border-radius:10px;padding:12px 14px;margin-bottom:8px}
+.tag{font-size:10px;background:#1a1a1a;padding:2px 6px;border-radius:4px;color:#666}
+.sbtn{width:100%;border:none;border-radius:10px;padding:15px;font-size:15px;font-weight:900;cursor:pointer;letter-spacing:1px;font-family:inherit;margin-bottom:14px;background:linear-gradient(135deg,#facc15,#f59e0b);color:#000}
+.sbtn.ok{background:#166534;color:#f0f0f0}
+.pgbg{background:#1a1a1a;border-radius:4px;height:6px}
+.pgfill{height:100%;border-radius:4px}
+.mcard{background:#111;border:1px solid #222;border-radius:10px;padding:12px 14px;margin-bottom:8px;cursor:pointer}
+.mcard.done{background:#0a1a0a;border-color:#166534;opacity:.75}
+.mchk{width:20px;height:20px;border-radius:50%;border:2px solid #333;background:#1a1a1a;display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0}
+.mchk.ok{background:#22c55e;border-color:#22c55e;color:#000}
+.excard{background:#111;border:1px solid #1a1a1a;border-radius:10px;margin-bottom:8px;overflow:hidden}
+.excard.on{border-color:#4ade80}
+.exhdr{padding:10px 14px;cursor:pointer;display:flex;justify-content:space-between;align-items:center}
+.exbody{padding:0 14px 12px;border-top:1px solid #1a1a1a}
+.rbtn{flex:1;background:#1a1a1a;border:1px solid #333;border-radius:6px;color:#888;padding:7px 2px;font-size:11px;cursor:pointer;font-family:inherit;font-weight:700}
+.rbtn.on{background:#facc15;color:#000;border-color:#facc15}
+#tov{position:fixed;top:64px;left:50%;transform:translateX(-50%);width:calc(100% - 28px);max-width:452px;background:#1a1a00;border:2px solid #facc15;border-radius:12px;padding:12px 16px;z-index:150;display:none}
+#tov.show{display:flex;align-items:center;justify-content:space-between}
+#tov.danger{background:#7f1d1d;border-color:#ef4444}
+.tipcard{background:#0f1400;border:1px solid #facc1533;border-radius:8px;padding:10px 12px;margin-top:12px;font-size:12px;color:#888;line-height:1.6;display:flex;gap:8px}
+.hist{background:#111;border:1px solid #1a1a1a;border-radius:8px;padding:10px 12px;margin-bottom:6px}
+.objcard{background:#111;border-radius:10px;padding:12px 14px;margin-bottom:10px}
+.shopitem{display:flex;align-items:center;gap:12px;padding:10px 14px;background:#111;border:1px solid #1a1a1a;border-radius:10px;margin-bottom:6px;cursor:pointer}
+.shopitem.got{background:#0a1a0a;border-color:#166534;opacity:.7}
+.shopchk{width:24px;height:24px;border-radius:6px;border:2px solid #333;background:#1a1a1a;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+.shopchk.ok{background:#22c55e;border-color:#22c55e;color:#000}
+.shopsec{font-size:10px;color:#facc15;letter-spacing:2px;margin:14px 0 6px;border-bottom:1px solid #1a1a1a;padding-bottom:4px}
+.refgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}
+.refcard{background:#111;border-radius:8px;padding:10px}
+</style>
+</head>
+<body>
+<div id="header">
+  <div style="display:flex;justify-content:space-between;align-items:center">
+    <div>
+      <div style="font-size:22px;font-weight:900;letter-spacing:1px">LUIS <span style="color:#facc15">PREP</span></div>
+      <div style="font-size:10px;color:#555;letter-spacing:2px;margin-top:2px">COACH SYSTEM · 178CM · MADRID</div>
+    </div>
+    <div style="text-align:right">
+      <div style="font-size:10px;color:#facc15">FASE</div>
+      <div style="font-size:12px;font-weight:700;color:#ef4444">CORTE → AGO 25</div>
+    </div>
+  </div>
+</div>
+<div id="app"></div>
+<div id="tov">
+  <div>
+    <div style="font-size:11px;color:#facc15;letter-spacing:1px">DESCANSO</div>
+    <div style="font-size:36px;font-weight:900;line-height:1" id="tdisp">1:30</div>
+    <button onclick="skipT()" style="background:none;border:none;color:#555;font-size:11px;cursor:pointer;font-family:inherit;margin-top:4px">SALTAR</button>
+  </div>
+  <svg width="64" height="64" style="transform:rotate(-90deg)">
+    <circle cx="32" cy="32" r="28" fill="none" stroke="#222" stroke-width="4"/>
+    <circle id="tarc" cx="32" cy="32" r="28" fill="none" stroke="#facc15" stroke-width="4" stroke-dasharray="175.9" stroke-dashoffset="0"/>
+  </svg>
+</div>
+<div id="nav">
+  <button class="nb on" id="nb-diet" onclick="showTab('diet')"><span class="ni">&#127869;&#65039;</span><span class="nl">Dieta</span><div class="nd"></div></button>
+  <button class="nb" id="nb-workout" onclick="showTab('workout')"><span class="ni">&#128170;</span><span class="nl">Entreno</span><div class="nd"></div></button>
+  <button class="nb" id="nb-progress" onclick="showTab('progress')"><span class="ni">&#128202;</span><span class="nl">Progreso</span><div class="nd"></div></button>
+  <button class="nb" id="nb-measures" onclick="showTab('measures')"><span class="ni">&#128207;</span><span class="nl">Medidas</span><div class="nd"></div></button>
+  <button class="nb" id="nb-goals" onclick="showTab('goals')"><span class="ni">&#127919;</span><span class="nl">Objetivos</span><div class="nd"></div></button>
+  <button class="nb" id="nb-shop" onclick="showTab('shop')"><span class="ni">&#128722;</span><span class="nl">Compra</span><div class="nd"></div></button>
+</div>
+<script>
+var KEY='luisprep5';
+var D=ldata();
+function ldata(){try{var r=localStorage.getItem(KEY);return r?JSON.parse(r):def()}catch(e){return def()}}
+function def(){return{checkins:[],wlogs:[],mlogs:[],dietDone:{},water:{},aday:0}}
+function sv(){try{localStorage.setItem(KEY,JSON.stringify(D))}catch(e){}}
+function today(){return new Date().toISOString().split('T')[0]}
+
+var DIET=[
+  {t:'07:00',n:'Comida 1 - Pre-entreno',k:420,p:30,c:55,g:9,items:['1 huevo entero + 3 claras','60g avena','150g fruta (no platano)','Cafe solo sin azucar']},
+  {t:'09:30',n:'Post-entreno',k:420,p:33,c:65,g:3,items:['30g proteina en polvo','60g harina de arroz','100g platano']},
+  {t:'12:00',n:'Comida 2',k:350,p:33,c:38,g:8,items:['30g proteina en polvo','50g tortitas de arroz','10g frutos secos']},
+  {t:'14:30',n:'Comida 3 (TEMPORAL)',k:470,p:45,c:65,g:18,items:['150g burger meat vacuno Mercadona','80g arroz en crudo','Verduras libres','SIN aceite - ya tiene grasa propia','+ 2 claras de huevo para compensar proteina']},
+  {t:'18:30',n:'Comida 4 - Merienda',k:290,p:22,c:45,g:7,items:['1 huevo entero + 2 claras','60g avena']},
+  {t:'21:00',n:'Cena - Adelantada',k:450,p:48,c:50,g:7,items:['180g pechuga pollo carniceria','60g arroz en crudo','Verduras libres','5ml aceite oliva']},
+];
+
+var WD=[
+  {day:'DIA 1',muscle:'PECHO SUPERIOR + HOMBROS + TRICEPS',short:'Pecho A',
+   ex:[
+    {n:'Aperturas polea baja hacia arriba',s:3,r:'12',rir:0,rest:60,note:'Calentamiento pecho superior. Conexion mente-musculo.'},
+    {n:'Press inclinado Smith 45',s:4,r:'6/10/10/10',rir:1,rest:90,note:'PRIORIDAD. Top set + 3x10. Ultima serie DROP SET.'},
+    {n:'Press inclinado mancuernas',s:3,r:'6/10/10',rir:1,rest:90,note:'Bajada controlada 3 segundos.'},
+    {n:'Cruces polea alta hacia abajo',s:3,r:'12',rir:0,rest:60,note:'Ultima serie REST PAUSE.'},
+    {n:'Press militar mancuernas',s:3,r:'6/8/8',rir:1,rest:90,note:'Top set + 2x8.'},
+    {n:'Elevaciones laterales polea 1 brazo',s:4,r:'12',rir:0,rest:45,note:'Ultimo set DROP SET.'},
+    {n:'JM Press Smith triceps',s:4,r:'6/10/10/10',rir:1,rest:75,note:'Top set + 3x10.'},
+    {n:'Extension cuerda + unilateral BISERIE',s:3,r:'10+10',rir:0,rest:60,note:'Sin descanso entre los dos ejercicios.'},
+    {n:'Gemelos maquina de pie',s:4,r:'12',rir:0,rest:45,note:'Al fallo.'},
+    {n:'Crunch + Elevacion piernas BISERIE',s:3,r:'15+15',rir:0,rest:45,note:''},
+  ]},
+  {day:'DIA 2',muscle:'ESPALDA + HOMBRO POSTERIOR + BICEPS',short:'Espalda A',
+   ex:[
+    {n:'Jalon agarre prono maquina',s:3,r:'6/10/10',rir:1,rest:90,note:'Codos hacia bolsillos traseros.'},
+    {n:'Remo mancuernas banco inclinado',s:3,r:'6/8/8',rir:1,rest:90,note:'Codo pegado, no abrir.'},
+    {n:'Remo Gironda agarre neutro',s:3,r:'6/10/10',rir:0,rest:75,note:'Ultima serie REST PAUSE.'},
+    {n:'Jalon agarre supino',s:3,r:'10',rir:0,rest:60,note:'Ultima serie DROP SET.'},
+    {n:'Pullover polea',s:2,r:'12',rir:1,rest:60,note:'Estiramiento maximo arriba.'},
+    {n:'Posteriores maquina sentado',s:4,r:'6/10/10/10',rir:0,rest:60,note:'Ultima serie DROP SET.'},
+    {n:'Curl biceps maquina Scott',s:4,r:'6/10/10/10',rir:1,rest:75,note:''},
+    {n:'Curl inclinado + Curl martillo BISERIE',s:3,r:'6/10+10',rir:0,rest:60,note:''},
+    {n:'Gemelos maquina sentado',s:6,r:'12',rir:0,rest:45,note:'Al fallo.'},
+    {n:'Plancha + Hipopresivos',s:3,r:'30s',rir:0,rest:45,note:''},
+  ]},
+  {day:'DIA 3',muscle:'CUADRICEPS + FEMORALES',short:'Piernas',
+   ex:[
+    {n:'Extension cuadriceps maquina',s:4,r:'6/10/10/10',rir:0,rest:75,note:'PRE-FATIGA. Ultima serie DROP SET.'},
+    {n:'Hack Squat / Smith sentadilla',s:4,r:'6/8/8/8',rir:1,rest:120,note:'Rodillas siguen punta del pie.'},
+    {n:'Prensa 45',s:4,r:'6/10/10/10',rir:0,rest:90,note:'Ultima serie REST PAUSE.'},
+    {n:'Prensa horizontal pies altos',s:3,r:'6/10/10',rir:1,rest:90,note:'Enfasis femoral.'},
+    {n:'Curl femoral sentado maquina',s:4,r:'6/10/10/10',rir:0,rest:75,note:'Ultima serie DROP SET.'},
+    {n:'Curl femoral tumbado maquina',s:4,r:'8/10/10/10',rir:1,rest:75,note:''},
+    {n:'Aductores maquina',s:3,r:'12',rir:1,rest:60,note:''},
+    {n:'Gemelos en prensa',s:6,r:'15',rir:0,rest:45,note:'Al fallo.'},
+    {n:'Elevacion piernas + Crunch BISERIE',s:3,r:'15+15',rir:0,rest:45,note:''},
+  ]},
+  {day:'DIA 4',muscle:'PECHO PLANO + HOMBROS + TRICEPS',short:'Pecho B',
+   ex:[
+    {n:'Press plano Smith',s:4,r:'6/10/10/10',rir:0,rest:90,note:'Ultima serie REST PAUSE.'},
+    {n:'Aperturas polea alta',s:3,r:'12',rir:0,rest:60,note:'Ultima serie DROP SET.'},
+    {n:'Press maquina pecho sentado',s:3,r:'6/10/10',rir:1,rest:75,note:''},
+    {n:'Aperturas polea baja de pie',s:3,r:'6/10/10',rir:0,rest:60,note:'Ultima serie DROP SET.'},
+    {n:'Press militar Smith',s:3,r:'6/8/8',rir:1,rest:90,note:''},
+    {n:'Elevaciones laterales mancuernas sentado',s:3,r:'12',rir:0,rest:45,note:'Todas DROP SET.'},
+    {n:'Elevaciones frontales barra polea baja',s:3,r:'6/10/10',rir:1,rest:60,note:''},
+    {n:'Press frances mancuernas',s:4,r:'6/10/10/10',rir:1,rest:75,note:''},
+    {n:'Extension cuerda + trasnuca BISERIE',s:3,r:'10+10',rir:0,rest:60,note:''},
+    {n:'Crunch + Plancha BISERIE',s:3,r:'15+30s',rir:0,rest:45,note:''},
+  ]},
+  {day:'DIA 5',muscle:'ESPALDA + HOMBRO POSTERIOR + BICEPS',short:'Espalda B',
+   ex:[
+    {n:'Jalon agarre neutro abierto',s:3,r:'6/10/10',rir:1,rest:90,note:''},
+    {n:'Remo Smith agarre prono',s:3,r:'6/10/10',rir:0,rest:90,note:'Ultima serie REST PAUSE.'},
+    {n:'Remo unilateral polea media neutro',s:3,r:'6/10/10',rir:0,rest:75,note:'Ultima serie DROP SET.'},
+    {n:'Pullover polea',s:2,r:'12',rir:1,rest:60,note:''},
+    {n:'Remo al menton agarre abierto',s:3,r:'6/10/10',rir:1,rest:75,note:''},
+    {n:'Posteriores un brazo polea',s:4,r:'6/10/10/10',rir:0,rest:60,note:'Ultima serie DROP SET.'},
+    {n:'Curl biceps barra de pie',s:4,r:'6/10/10/10',rir:1,rest:75,note:''},
+    {n:'Curl Bayesian + Curl mancuernas BISERIE',s:3,r:'6/10+10',rir:0,rest:60,note:''},
+    {n:'Gemelos maquina sentado VOLUMEN',s:12,r:'12',rir:0,rest:30,note:'Dia de alto volumen gemelos.'},
+    {n:'Elevacion piernas + Hipopresivos',s:3,r:'15+30s',rir:0,rest:45,note:''},
+  ]},
+];
+
+var INICIO={cuello:37,hombros:116,pecho:103,pechoSup:103,espalda:51,cintura:86,abdomenBajo:86,cadera:89,brazoD:38.5,brazoDRel:33.5,brazoI:37,brazoIRel:35,antebrazoD:29.5,antebrazoI:29.5,munecaD:16.5,munecaI:16.5,musloD:59,musloDMed:53,musloI:57.5,musloIMed:51.5,rodillaD:37.5,rodillaI:37.5,pantorrillaD:37.5,pantorrillaI:38.5,tobilloD:21.5,tobilloI:22};
+var MGROUPS=[
+  {t:'TRONCO',f:[['Cuello','cuello'],['Hombros','hombros'],['Pecho insp.','pecho'],['Pecho superior','pechoSup'],['Espalda ancha','espalda'],['Cintura ombligo','cintura'],['Abdomen bajo','abdomenBajo'],['Cadera','cadera']]},
+  {t:'BRAZOS',f:[['Brazo D flex.','brazoD'],['Brazo D rel.','brazoDRel'],['Brazo I flex.','brazoI'],['Brazo I rel.','brazoIRel'],['Antebrazo D','antebrazoD'],['Antebrazo I','antebrazoI'],['Muneca D','munecaD'],['Muneca I','munecaI']]},
+  {t:'PIERNAS',f:[['Muslo D max.','musloD'],['Muslo D med.','musloDMed'],['Muslo I max.','musloI'],['Muslo I med.','musloIMed'],['Rodilla D','rodillaD'],['Rodilla I','rodillaI'],['Pantorrilla D','pantorrillaD'],['Pantorrilla I','pantorrillaI'],['Tobillo D','tobilloD'],['Tobillo I','tobilloI']]},
+];
+var TIPS=[
+  'Cena a las 21h maximo - 1h antes de acostarte para mejorar el sueno.',
+  'Magnesio glicinato 400mg 30min antes de dormir. Cada noche sin excepcion.',
+  'Pesate cada manana en ayunas. Usa la media semanal, no el peso del dia.',
+  'Minimo 3.5 litros de agua al dia en fase de corte.',
+  'Basic Fit masificado: si no hay maquina, sustituye por polea. Nunca pierdas el ritmo.',
+  'El sueno fragmentado es tu mayor enemigo. Ashwagandha + magnesio son prioritarios.',
+  'Fotos cada 2 semanas: frontal, lateral y espalda. Misma hora, misma luz.',
+  'Piernas son tu grupo mas rezagado. El dia 3 nunca se salta.',
+  'Top set primero con peso maximo, luego baja peso y sube reps. Siempre.',
+  'RIR 0 = al fallo absoluto. No te quedes corto en las ultimas series.',
+];
+
+var tInt=null,tVal=0,tTgt=0,curEx=null;
+function startT(s){
+  clearInterval(tInt);tVal=s;tTgt=s;updT();
+  var ov=document.getElementById('tov');
+  ov.className='show';
+  document.querySelectorAll('.rbtn').forEach(function(b){b.classList.remove('on')});
+  document.querySelectorAll('[data-s="'+s+'"]').forEach(function(b){b.classList.add('on')});
+  tInt=setInterval(function(){
+    tVal--;
+    if(tVal<=10)document.getElementById('tov').className='show danger';
+    if(tVal<=0){clearInterval(tInt);tVal=0;setTimeout(function(){document.getElementById('tov').className=''},1200);}
+    updT();
+  },1000);
+}
+function skipT(){clearInterval(tInt);tVal=0;document.getElementById('tov').className=''}
+function updT(){
+  var m=Math.floor(tVal/60),s=String(tVal%60);if(s.length<2)s='0'+s;
+  document.getElementById('tdisp').textContent=m+':'+s;
+  var c=2*Math.PI*28,off=tTgt>0?c*(1-tVal/tTgt):0;
+  document.getElementById('tarc').style.strokeDashoffset=off;
+}
+function calcBF(p,a,t){
+  if(!p||!a||!t)return null;
+  var sum=parseFloat(p)+parseFloat(a)+parseFloat(t);
+  var d=1.10938-0.0008267*sum+0.0000016*sum*sum-0.0002574*39;
+  return (495/d-450).toFixed(1);
+}
+function showTab(tab){
+  curEx=null;
+  document.querySelectorAll('.nb').forEach(function(b){b.classList.remove('on')});
+  document.getElementById('nb-'+tab).classList.add('on');
+  var app=document.getElementById('app');
+  app.innerHTML='';
+  if(tab==='diet')rDiet();
+  else if(tab==='workout')rWorkout();
+  else if(tab==='progress')rProgress();
+  else if(tab==='measures')rMeasures();
+  else if(tab==='goals')rGoals();
+  else if(tab==='shop')rShop();
+  app.scrollTop=0;
+}
+function rDiet(){
+  var td=today(),done=D.dietDone[td]||{},water=D.water[td]||0;
+  var nd=Object.values(done).filter(Boolean).length;
+  var kcal=DIET.reduce(function(s,m,i){return done[i]?s+m.k:s},0);
+  var pct=Math.round(nd/DIET.length*100);
+  var h='<div class="stitle">PLAN NUTRICIONAL - CORTE</div>';
+  h+='<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px">';
+  h+='<div style="background:#111;border:1px solid #1e1e1e;border-radius:8px;padding:8px;text-align:center"><div style="font-size:18px;font-weight:900;color:#facc15">2490</div><div style="font-size:9px;color:#555">kcal obj.</div></div>';
+  h+='<div style="background:#111;border:1px solid #1e1e1e;border-radius:8px;padding:8px;text-align:center"><div style="font-size:18px;font-weight:900;color:#22c55e">'+kcal+'</div><div style="font-size:9px;color:#555">kcal hechas</div></div>';
+  h+='<div style="background:#111;border:1px solid #1e1e1e;border-radius:8px;padding:8px;text-align:center"><div style="font-size:18px;font-weight:900;color:#60a5fa">218g</div><div style="font-size:9px;color:#555">proteina</div></div>';
+  h+='</div>';
+  h+='<div style="margin-bottom:14px"><div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="font-size:11px;color:#555">COMIDAS HOY</span><span style="font-size:11px;color:#facc15">'+nd+'/6</span></div><div class="pgbg"><div class="pgfill" style="width:'+pct+'%;background:linear-gradient(90deg,#facc15,#f59e0b)"></div></div></div>';
+  h+='<div style="background:#0f1a2e;border:1px solid #1e3a5f;border-radius:10px;padding:12px 14px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between">';
+  h+='<div><div style="font-size:11px;color:#60a5fa">AGUA HOY</div><div style="font-size:26px;font-weight:900">'+water.toFixed(2)+'<span style="font-size:13px;color:#60a5fa">L</span></div><div style="font-size:10px;color:#444">Meta: 3.5L</div></div>';
+  h+='<div><button onclick="addW()" style="background:#1e3a5f;border:1px solid #60a5fa;border-radius:8px;color:#60a5fa;padding:9px 16px;font-size:13px;cursor:pointer;font-family:inherit;font-weight:700;display:block;margin-bottom:6px">+ 250ml</button><div style="display:flex;gap:3px">';
+  for(var i=0;i<14;i++)h+='<div style="width:8px;height:8px;border-radius:2px;background:'+(i<Math.round(water/0.25)?'#60a5fa':'#1a1a1a')+'"></div>';
+  h+='</div></div></div>';
+  DIET.forEach(function(m,i){
+    var isDone=!!done[i];
+    h+='<div class="mcard'+(isDone?' done':'')+'" onclick="togM('+i+')">';
+    h+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">';
+    h+='<div style="display:flex;align-items:center;gap:8px"><div class="mchk'+(isDone?' ok':'')+'">'+(isDone?'v':'')+'</div>';
+    h+='<div><div style="font-size:11px;color:#facc15;font-weight:700">'+m.t+'</div><div style="font-size:14px;font-weight:700">'+m.n+'</div></div></div>';
+    h+='<div style="text-align:right"><div style="font-size:17px;font-weight:900;color:#facc15">'+m.k+'</div><div style="font-size:9px;color:#555">kcal</div></div></div>';
+    h+='<div style="display:flex;gap:10px;margin-bottom:6px"><span style="font-size:11px;color:#60a5fa">P '+m.p+'g</span><span style="font-size:11px;color:#facc15">C '+m.c+'g</span><span style="font-size:11px;color:#f97316">G '+m.g+'g</span></div>';
+    m.items.forEach(function(it){h+='<div style="font-size:12px;color:#888">- '+it+'</div>'});
+    h+='</div>';
+  });
+  h+='<div class="tipcard"><span>Coach:</span><span>Cena a las 21h max - critico para tu sueno. No negociable.</span></div>';
+  document.getElementById('app').innerHTML=h;
+}
+function togM(i){var td=today();if(!D.dietDone[td])D.dietDone[td]={};D.dietDone[td][i]=!D.dietDone[td][i];sv();rDiet()}
+function addW(){var td=today();D.water[td]=Math.min((D.water[td]||0)+0.25,5);sv();rDiet()}
+function rWorkout(){
+  var day=WD[D.aday||0],td=today();
+  var sched=['Lun','Mar','Mie','---','Vie','Sab','Dom'],sm=[0,1,2,-1,3,4,-1];
+  var h='<div class="stitle">RUTINA SST - SEMANA 1</div>';
+  h+='<div style="display:flex;gap:4px;margin-bottom:14px">';
+  sched.forEach(function(s,i){
+    var di=sm[i],isOn=di===(D.aday||0);
+    h+='<div onclick="'+(di>=0?'setDay('+di+')':'')+'" style="flex:1;background:'+(isOn?'#facc15':di>=0?'#111':'#0a0a0a')+';border:1px solid '+(isOn?'#facc15':'#1a1a1a')+';border-radius:6px;padding:6px 2px;text-align:center;cursor:'+(di>=0?'pointer':'default')+'">';
+    h+='<div style="font-size:9px;color:'+(isOn?'#000':'#555')+';font-weight:700">'+s+'</div>';
+    if(di>=0)h+='<div style="font-size:8px;color:'+(isOn?'#000':'#444')+'">'+WD[di].short+'</div>';
+    h+='</div>';
+  });
+  h+='</div>';
+  h+='<div style="background:#1a1a00;border:1px solid #facc1544;border-radius:10px;padding:12px 14px;margin-bottom:12px">';
+  h+='<div style="font-size:11px;color:#facc15">'+day.day+'</div>';
+  h+='<div style="font-size:17px;font-weight:900">'+day.muscle+'</div></div>';
+  day.ex.forEach(function(ex,i){
+    var isOn=curEx===i,lk=td+'-'+(D.aday||0)+'-'+i;
+    var sw=(D.wlogs||[]).find(function(l){return l.k===lk});
+    var swv=sw?sw.w:'';
+    h+='<div class="excard'+(isOn?' on':'')+'">';
+    h+='<div class="exhdr" onclick="togEx('+i+')">';
+    h+='<div style="flex:1"><div style="display:flex;gap:6px;align-items:center;margin-bottom:4px"><span style="font-size:10px;background:#facc1522;color:#facc15;padding:1px 6px;border-radius:4px;font-weight:700">#'+(i+1)+'</span><span style="font-size:13px;font-weight:700">'+ex.n+'</span></div>';
+    h+='<div style="display:flex;gap:5px;flex-wrap:wrap"><span class="tag">'+ex.s+' series</span><span class="tag">'+ex.r+' reps</span><span class="tag" style="color:#ef4444">RIR '+ex.rir+'</span><span class="tag" style="color:#60a5fa">'+ex.rest+'s</span></div></div>';
+    h+='<span style="color:#333;font-size:14px;margin-left:8px">'+(isOn?'▲':'▼')+'</span></div>';
+    if(isOn){
+      h+='<div class="exbody">';
+      if(ex.note)h+='<div style="background:#1a1a00;border:1px solid #facc1533;border-radius:6px;padding:7px 10px;margin-bottom:10px;font-size:12px;color:#aaa">'+ex.note+'</div>';
+      h+='<div style="margin-bottom:10px"><div class="lbl">PESO USADO</div><div style="display:flex;gap:8px;align-items:center"><input type="number" class="ifield" placeholder="kg" value="'+swv+'" oninput="logW('+i+',this.value)" style="font-size:18px;font-weight:700"><span style="font-size:13px;color:#555">kg</span></div></div>';
+      h+='<div class="lbl" style="margin-bottom:6px">INICIAR DESCANSO</div>';
+      h+='<div style="display:flex;gap:5px">';
+      [30,45,60,75,90,120].forEach(function(s){
+        h+='<button class="rbtn'+(tTgt===s&&tVal>0?' on':'')+'" data-s="'+s+'" onclick="startT('+s+')">'+(s<60?s+'s':Math.floor(s/60)+'m'+(s%60?s%60+'s':''))+'</button>';
+      });
+      h+='</div></div>';
+    }
+    h+='</div>';
+  });
+  h+='<div class="tipcard">Coach: Basic Fit masificado - si no hay maquina, sustituye por polea. Nunca pierdas el ritmo.</div>';
+  document.getElementById('app').innerHTML=h;
+}
+function setDay(i){D.aday=i;curEx=null;sv();rWorkout()}
+function togEx(i){curEx=curEx===i?null:i;rWorkout()}
+function logW(ei,val){
+  var td=today(),di=D.aday||0,k=td+'-'+di+'-'+ei;
+  D.wlogs=D.wlogs||[];
+  D.wlogs=D.wlogs.filter(function(l){return l.k!==k});
+  if(val)D.wlogs.push({k:k,date:td,day:di,ei:ei,w:parseFloat(val),n:WD[di].ex[ei].n});
+  sv();
+}
+function rProgress(){
+  var checkins=D.checkins||[];
+  var h='<div class="stitle">CHECK-IN SEMANAL</div>';
+  if(checkins.length>1){
+    h+='<div style="margin-bottom:14px"><div class="lbl">EVOLUCION PESO (kg)</div>';
+    h+='<div style="background:#111;border:1px solid #222;border-radius:8px;padding:10px">';
+    h+=mChart(checkins.filter(function(c){return c.w}),function(c){return parseFloat(c.w)},'#facc15');
+    h+='</div></div>';
+  }
+  h+='<div class="card" style="margin-bottom:14px">';
+  h+='<div class="lbl">FECHA</div><input type="date" class="ifield" id="cid" value="'+today()+'" style="margin-bottom:10px">';
+  h+='<div class="lbl">PESO (kg)</div><input type="number" class="ifield" id="ciw" placeholder="76.9" style="margin-bottom:10px;font-size:18px;font-weight:700">';
+  h+='<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:10px">';
+  h+='<div><div class="lbl">Energia</div><input type="number" class="ifield" id="cie" min="1" max="10" placeholder="7"></div>';
+  h+='<div><div class="lbl">Sueno</div><input type="number" class="ifield" id="cis" min="1" max="10" placeholder="5"></div>';
+  h+='<div><div class="lbl">Estres</div><input type="number" class="ifield" id="cist" min="1" max="10" placeholder="7"></div>';
+  h+='</div>';
+  h+='<div class="lbl">PLIEGUES (mm)</div>';
+  h+='<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:10px">';
+  h+='<div><div class="lbl">Pectoral</div><input type="number" class="ifield" id="cip" placeholder="6" oninput="lbf()"></div>';
+  h+='<div><div class="lbl">Abdominal</div><input type="number" class="ifield" id="cia" placeholder="12" oninput="lbf()"></div>';
+  h+='<div><div class="lbl">Muslo</div><input type="number" class="ifield" id="cit" placeholder="16" oninput="lbf()"></div>';
+  h+='</div>';
+  h+='<div id="bfr" style="display:none;background:#1a1a00;border:1px solid #facc1544;border-radius:8px;padding:10px;margin-bottom:10px;justify-content:space-between;align-items:center"><span style="font-size:12px;color:#888">% Grasa estimado</span><span id="bfv" style="font-size:26px;font-weight:900;color:#facc15">-</span></div>';
+  h+='<div class="lbl">NOTAS</div>';
+  h+='<textarea class="ifield" id="cin" rows="3" placeholder="Sensaciones, entrenamiento..." style="resize:none"></textarea>';
+  h+='</div>';
+  h+='<button class="sbtn" id="cisb" onclick="svCI()">GUARDAR CHECK-IN</button>';
+  if(checkins.length>0){
+    h+='<div class="lbl">HISTORIAL</div>';
+    var rev=[].concat(checkins).reverse().slice(0,5);
+    rev.forEach(function(c,i){
+      h+='<div class="hist"><div style="display:flex;justify-content:space-between;margin-bottom:6px"><span style="font-size:12px;color:#facc15;font-weight:700">'+c.date+'</span>'+(i===0?'<span style="font-size:9px;color:#facc15;background:#facc1511;padding:1px 8px;border-radius:10px">ULTIMO</span>':'')+'</div>';
+      h+='<div style="display:flex;gap:10px;flex-wrap:wrap">';
+      if(c.w)h+='<div><div style="font-size:9px;color:#555">Peso</div><div style="font-size:14px;font-weight:700">'+c.w+'kg</div></div>';
+      if(c.bf)h+='<div><div style="font-size:9px;color:#555">% Grasa</div><div style="font-size:14px;font-weight:700;color:#ef4444">'+c.bf+'%</div></div>';
+      if(c.e)h+='<div><div style="font-size:9px;color:#555">Energia</div><div style="font-size:14px;font-weight:700">'+c.e+'/10</div></div>';
+      h+='</div>';
+      if(c.notes)h+='<div style="font-size:11px;color:#555;margin-top:6px">'+c.notes+'</div>';
+      h+='</div>';
+    });
+  }
+  document.getElementById('app').innerHTML=h;
+}
+function lbf(){
+  var p=document.getElementById('cip'),a=document.getElementById('cia'),t=document.getElementById('cit');
+  if(!p||!a||!t)return;
+  var bf=calcBF(p.value,a.value,t.value);
+  var el=document.getElementById('bfr'),vl=document.getElementById('bfv');
+  if(bf&&el&&vl){el.style.display='flex';vl.textContent=bf+'%'}
+}
+function svCI(){
+  var date=document.getElementById('cid').value||today();
+  var w=document.getElementById('ciw').value;
+  var e=document.getElementById('cie').value;
+  var sl=document.getElementById('cis').value;
+  var p=document.getElementById('cip').value;
+  var a=document.getElementById('cia').value;
+  var t=document.getElementById('cit').value;
+  var notes=document.getElementById('cin').value;
+  var bf=calcBF(p,a,t);
+  D.checkins=D.checkins||[];
+  D.checkins=D.checkins.filter(function(c){return c.date!==date});
+  D.checkins.push({date:date,w:w,e:e,sl:sl,notes:notes,bf:bf,id:Date.now()});
+  D.checkins.sort(function(a,b){return new Date(a.date)-new Date(b.date)});
+  sv();
+  var btn=document.getElementById('cisb');
+  if(btn){btn.textContent='GUARDADO';btn.classList.add('ok');setTimeout(function(){btn.textContent='GUARDAR CHECK-IN';btn.classList.remove('ok');rProgress()},1500)}
+}
+function mChart(data,valFn,color){
+  if(data.length<2)return '';
+  var W=300,H=80,pad=20;
+  var vals=data.map(valFn);
+  var mn=Math.min.apply(null,vals),mx=Math.max.apply(null,vals),rng=mx-mn||1;
+  var pts=vals.map(function(v,i){
+    return (pad+(i/(data.length-1))*(W-pad*2))+','+(H-pad-((v-mn)/rng)*(H-pad*2));
+  });
+  var s='<svg width="'+W+'" height="'+H+'" style="display:block;overflow:visible">';
+  s+='<polyline points="'+pts.join(' ')+'" fill="none" stroke="'+color+'" stroke-width="2"/>';
+  vals.forEach(function(v,i){
+    var xy=pts[i].split(',');
+    s+='<circle cx="'+xy[0]+'" cy="'+xy[1]+'" r="3" fill="'+color+'"/>';
+    s+='<text x="'+xy[0]+'" y="'+(H-4)+'" text-anchor="middle" fill="#444" font-size="8">'+data[i].date.slice(5)+'</text>';
+    if(i===vals.length-1)s+='<text x="'+(parseFloat(xy[0])+5)+'" y="'+(parseFloat(xy[1])-5)+'" fill="'+color+'" font-size="10" font-weight="bold">'+v+'</text>';
+  });
+  s+='</svg>';
+  return s;
+}
+function rMeasures(){
+  var last=(D.mlogs||[]).slice(-1)[0]||{};
+  var h='<div class="stitle">MEDIDAS CORPORALES</div>';
+  h+='<div style="background:#0a0f1a;border:1px solid #1e3a5f;border-radius:10px;padding:10px 14px;margin-bottom:14px">';
+  h+='<div style="font-size:10px;color:#60a5fa;margin-bottom:6px">INICIO - 21 ABR 2025</div>';
+  h+='<div style="display:flex;gap:8px;flex-wrap:wrap">';
+  [['Cintura','86cm'],['Brazo D','38.5cm'],['Muslo D','59cm'],['Hombros','116cm']].forEach(function(x){
+    h+='<div style="background:#111;border-radius:6px;padding:4px 10px"><div style="font-size:9px;color:#555">'+x[0]+'</div><div style="font-size:13px;font-weight:700;color:#60a5fa">'+x[1]+'</div></div>';
+  });
+  h+='</div></div>';
+  h+='<div class="lbl">FECHA</div><input type="date" class="ifield" id="md" value="'+today()+'" style="margin-bottom:14px">';
+  MGROUPS.forEach(function(g){
+    h+='<div style="margin-bottom:14px"><div style="font-size:10px;color:#facc15;margin-bottom:8px;border-bottom:1px solid #1a1a1a;padding-bottom:4px">'+g.t+' (cm)</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">';
+    g.f.forEach(function(f){
+      var label=f[0],key=f[1],ini=INICIO[key];
+      var lv=parseFloat(last[key])||null;
+      var diff=lv&&ini?(lv-ini).toFixed(1):null;
+      h+='<div><div style="display:flex;justify-content:space-between;margin-bottom:3px"><span style="font-size:10px;color:#555">'+label+'</span>';
+      if(diff!==null)h+='<span style="font-size:9px;color:'+(parseFloat(diff)>0?'#22c55e':'#ef4444')+'">'+(parseFloat(diff)>0?'+':'')+diff+'</span>';
+      h+='</div><div style="display:flex;gap:5px;align-items:center"><input type="number" class="ifield" id="mf-'+key+'" placeholder="'+ini+'" style="font-size:14px"><span style="font-size:9px;color:#333">'+ini+'</span></div></div>';
+    });
+    h+='</div></div>';
+  });
+  h+='<button class="sbtn" id="msb" onclick="svM()">GUARDAR MEDIDAS</button>';
+  h+='<div class="tipcard">Coach: Mide siempre el mismo dia, misma hora, en ayunas. Lado derecho.</div>';
+  document.getElementById('app').innerHTML=h;
+  Object.keys(INICIO).forEach(function(k){
+    var el=document.getElementById('mf-'+k);
+    if(el&&last[k])el.value=last[k];
+  });
+}
+function svM(){
+  var date=document.getElementById('md').value||today();
+  var entry={date:date,id:Date.now()};
+  Object.keys(INICIO).forEach(function(k){
+    var el=document.getElementById('mf-'+k);
+    if(el&&el.value)entry[k]=parseFloat(el.value);
+  });
+  D.mlogs=D.mlogs||[];
+  D.mlogs=D.mlogs.filter(function(m){return m.date!==date});
+  D.mlogs.push(entry);
+  D.mlogs.sort(function(a,b){return new Date(a.date)-new Date(b.date)});
+  sv();
+  var btn=document.getElementById('msb');
+  if(btn){btn.textContent='GUARDADO';btn.classList.add('ok');setTimeout(function(){btn.textContent='GUARDAR MEDIDAS';btn.classList.remove('ok')},1500)}
+}
+function rGoals(){
+  var last=(D.checkins||[]).slice(-1)[0];
+  var cw=parseFloat(last&&last.w)||76.9,cbf=parseFloat(last&&last.bf)||14.5;
+  var wpct=Math.max(0,Math.min(100,((76.9-cw)/(76.9-71.5))*100));
+  var bpct=Math.max(0,Math.min(100,((14.5-cbf)/(14.5-10.5))*100));
+  var h='<div class="stitle">OBJETIVOS Y MOTIVACION</div>';
+  h+='<div style="background:#1a0000;border:1px solid #ef444444;border-radius:12px;padding:14px;margin-bottom:14px">';
+  h+='<div style="font-size:11px;color:#ef4444;margin-bottom:10px">OBJETIVO AGOSTO 2025</div>';
+  h+='<div style="margin-bottom:10px"><div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="font-size:12px;color:#aaa">Peso: '+cw+'kg / 71.5kg</span><span style="font-size:12px;color:#facc15;font-weight:700">'+wpct.toFixed(0)+'%</span></div><div class="pgbg"><div class="pgfill" style="width:'+wpct+'%;background:linear-gradient(90deg,#ef4444,#facc15)"></div></div></div>';
+  h+='<div><div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="font-size:12px;color:#aaa">Grasa: '+cbf+'% / 10.5%</span><span style="font-size:12px;color:#facc15;font-weight:700">'+bpct.toFixed(0)+'%</span></div><div class="pgbg"><div class="pgfill" style="width:'+bpct+'%;background:linear-gradient(90deg,#ef4444,#facc15)"></div></div></div>';
+  h+='</div>';
+  [{phase:'CORTO PLAZO',dl:'1 Agosto 2025',c:'#ef4444',goals:['Peso: 71-72kg','% Grasa: 10-11%','Abdominales visibles','Cintura < 80cm','Brazos venosos']},
+   {phase:'MEDIO PLAZO',dl:'Abril 2026',c:'#f97316',goals:['Peso: 82-84kg','Muslo D: 59 a 65cm+','Brazos: 38.5 a 41cm+','Espalda con grosor','Pecho superior relleno']},
+   {phase:'LARGO PLAZO',dl:'Verano 2027',c:'#facc15',goals:['Fisico natural optimizado','84-87kg en condicion','Analitica perfecta','Evaluar ciclo inteligente','Post-ciclo: 90-93kg']}
+  ].forEach(function(o){
+    h+='<div class="objcard" style="border:1px solid '+o.c+'33;border-left:3px solid '+o.c+'"><div style="display:flex;justify-content:space-between;margin-bottom:8px"><div style="font-size:13px;font-weight:900;color:'+o.c+'">'+o.phase+'</div><div style="font-size:11px;color:#555">'+o.dl+'</div></div>';
+    o.goals.forEach(function(g){h+='<div style="display:flex;gap:8px;margin-bottom:4px;font-size:13px;color:#bbb"><span style="color:'+o.c+'">></span>'+g+'</div>'});
+    h+='</div>';
+  });
+  h+='<div class="lbl" style="margin-bottom:8px">FISICO OBJETIVO - REFERENTES</div><div class="refgrid">';
+  [{n:'PIOTR WOJTOWICZ',h:'@piotr_wojtowicz_',d:'182cm 118kg Classic Pro',c:'#facc15'},
+   {n:'PABLO LLOPIS',h:'@pablo_llopis9',d:'178cm 115kg IFBB Pro Open',c:'#f97316'},
+   {n:'YG0402',h:'@yg0402_ifbbpro',d:'Classic Pro Separaciones elite',c:'#60a5fa'},
+   {n:'NIHAT KYAA',h:'@nihat.kyaa',d:'Open Masa brutal SST ptuor',c:'#a78bfa'}
+  ].forEach(function(r){
+    h+='<div class="refcard" style="border:1px solid '+r.c+'33"><div style="font-size:13px;font-weight:900;color:'+r.c+'">'+r.n+'</div><div style="font-size:10px;color:#555;margin-bottom:4px">'+r.h+'</div><div style="font-size:11px;color:#888">'+r.d+'</div></div>';
+  });
+  h+='</div><div class="lbl" style="margin-bottom:8px">CONSIDERACIONES DEL COACH</div>';
+  TIPS.forEach(function(t){h+='<div class="card" style="margin-bottom:6px;font-size:13px;color:#aaa;line-height:1.5">'+t+'</div>'});
+  document.getElementById('app').innerHTML=h;
+}
+
+var SHOPLIST=[
+  {sec:'PROTEINAS'},
+  {n:'Pechuga de pollo',q:'~1.2 kg/semana',d:'Carniceria',note:'180g cena x 6 dias'},
+  {n:'Carne picada vacuno 5% grasa',q:'~1 kg',d:'Mercadona Hacendado',note:'TEMPORAL: usar burger meat hasta acabar'},
+  {n:'Huevos (docena)',q:'~18 uds/semana',d:'Mercadona o Lidl',note:'Los mas baratos - misma calidad'},
+  {n:'Proteina en polvo',q:'Ya tienes',d:'Prozis/HSN',note:'30g post-entreno y comida 2'},
+  {sec:'CARBOHIDRATOS'},
+  {n:'Arroz blanco Hacendado',q:'~700g/semana',d:'Mercadona',note:'80g comida3 + 60g cena en crudo'},
+  {n:'Avena',q:'~500g/semana',d:'Lidl',note:'60g desayuno + 60g merienda'},
+  {n:'Harina de arroz',q:'~200g/semana',d:'Mercadona o HSN',note:'60g post-entreno'},
+  {n:'Tortitas de arroz sin sal',q:'~50g/semana',d:'Mercadona',note:'50g comida 2 - sin azucar'},
+  {n:'Platanos',q:'~6-7/semana',d:'Mercadona o Lidl',note:'100g post-entreno'},
+  {n:'Fruta variada',q:'~900g/semana',d:'Mercadona o Lidl',note:'150g desayuno - fresas, naranja, melon'},
+  {sec:'GRASAS'},
+  {n:'Aceite de oliva virgen extra',q:'~30ml/semana',d:'Mercadona',note:'5ml comida 3 y cena'},
+  {n:'Nueces o almendras crudas SIN sal',q:'~60-70g/semana',d:'Mercadona o Lidl',note:'10g comida 2 - pesar siempre'},
+  {sec:'VERDURAS (cantidad libre)'},
+  {n:'Espinacas o lechuga',q:'A gusto',d:'Lidl congeladas',note:'Congeladas = mas baratas mismo valor'},
+  {n:'Brocoli',q:'A gusto',d:'Lidl congelado',note:''},
+  {n:'Tomate',q:'A gusto',d:'Mercadona o Lidl',note:''},
+  {n:'Pepino',q:'A gusto',d:'Mercadona o Lidl',note:''},
+  {n:'Pimiento o Calabacin',q:'A gusto',d:'Mercadona o Lidl',note:''},
+  {n:'Cebolla',q:'A gusto',d:'Mercadona o Lidl',note:''},
+  {sec:'SUPLEMENTOS'},
+  {n:'Creatina monohidrato',q:'Ya tienes (Prozis)',d:'Ya tienes',note:'5g post-entreno'},
+  {n:'Multivitaminico',q:'Ya tienes',d:'Ya tienes',note:'Con desayuno'},
+  {n:'Magnesio bisglicinato HSN',q:'Pedido - llega 24-48h',d:'HSN',note:'2 caps 30min antes dormir'},
+  {n:'Ashwagandha KSM-66 HSN',q:'Pedido - llega 24-48h',d:'HSN',note:'1 cap comida3 + 1 cap cena'},
+  {n:'Vitamina D3 4000UI HSN',q:'Pedido - llega 24-48h',d:'HSN',note:'1 cap con cena'},
+  {n:'Omega-3 TG IFOS HSN',q:'Pedido - llega 24-48h',d:'HSN',note:'2 caps con comida3'},
+];
+function rShop(){
+  var app=document.getElementById('app');
+  var shop=D.shop||{};
+  var total=SHOPLIST.filter(function(i){return i.n}).length;
+  var got=Object.values(shop).filter(Boolean).length;
+  var pct=Math.round(got/total*100);
+  var h='<div class="stitle">LISTA DE LA COMPRA</div>';
+  h+='<div style="margin-bottom:14px"><div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="font-size:11px;color:#555">CONSEGUIDO</span><span style="font-size:11px;color:#facc15">'+got+'/'+total+'</span></div><div class="pgbg"><div class="pgfill" style="width:'+pct+'%;background:linear-gradient(90deg,#22c55e,#facc15)"></div></div></div>';
+  h+='<button onclick="resetShop()" style="background:#1a1a1a;border:1px solid #333;border-radius:8px;color:#888;padding:8px 14px;font-size:11px;cursor:pointer;font-family:inherit;margin-bottom:14px">RESETEAR LISTA</button>';
+  var idx=0;
+  SHOPLIST.forEach(function(item){
+    if(item.sec){
+      h+='<div class="shopsec">'+item.sec+'</div>';
+    } else {
+      var i=idx++;
+      var isGot=!!shop[i];
+      var isPedido=item.q.indexOf('Pedido')>=0||item.q.indexOf('Ya tienes')>=0;
+      var isTemp=item.note&&item.note.indexOf('TEMPORAL')>=0;
+      h+='<div class="shopitem'+(isGot?' got':'')+'" onclick="togShop('+i+')">';
+      h+='<div class="shopchk'+(isGot?' ok':'')+'"><span>'+(isGot?'v':'')+'</span></div>';
+      h+='<div style="flex:1">';
+      h+='<div style="font-size:13px;font-weight:700;'+(isGot?'text-decoration:line-through;color:#555;':'')+'">'+(isTemp?'<span style="color:#ef4444">TEMPORAL: </span>':'')+item.n+'</div>';
+      h+='<div style="font-size:11px;color:#666;margin-top:2px">'+item.q+' - '+item.d+'</div>';
+      if(item.note&&!isTemp)h+='<div style="font-size:10px;color:#444;margin-top:2px">'+item.note+'</div>';
+      if(item.note&&isTemp)h+='<div style="font-size:10px;color:#ef4444;margin-top:2px">'+item.note+'</div>';
+      h+='</div>';
+      if(isPedido)h+='<div style="font-size:9px;background:'+(item.q.indexOf('Ya tienes')>=0?'#166534':'#1e3a5f')+';color:'+(item.q.indexOf('Ya tienes')>=0?'#4ade80':'#60a5fa')+';padding:2px 6px;border-radius:4px;white-space:nowrap">'+(item.q.indexOf('Ya tienes')>=0?'TIENES':'EN CAMINO')+'</div>';
+      h+='</div>';
+    }
+  });
+  h+='<div class="tipcard"><span>Coach:</span><span>Compra para la semana entera de una vez. Ahorra tiempo y evita improvisar.</span></div>';
+  app.innerHTML=h;
+}
+function togShop(i){D.shop=D.shop||{};D.shop[i]=!D.shop[i];sv();rShop()}
+function resetShop(){D.shop={};sv();rShop()}
+
+showTab('diet');
+</script>
+</body>
+</html>
