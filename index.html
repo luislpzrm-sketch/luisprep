@@ -367,6 +367,29 @@ function rDiet(){
   var tips=['Prioriza proteina + verduras. Carne o pescado a la plancha con ensalada.','Evita salsas, rebozados, fritos y pan.','Arroz o patata hervida - adelante, son carbos limpios.','Nada de alcohol. Agua o refresco 0.','Come despacio. Para cuando estes saciado.','Comida social inevitable - disfruta sin culpa y vuelve al plan despues.','Intenta que sea tu permitido semanal - aprovecha el momento social.'];
   tips.forEach(function(tip,i){h+='<div style="display:flex;gap:8px;margin-bottom:8px;font-size:12px;color:#aaa"><span style="color:#facc15;font-weight:700;flex-shrink:0">'+(i+1)+'.</span>'+tip+'</div>';});
   h+='</div></div>';
+    h+='<div style="background:#0a0f1a;border:1px solid #1e3a5f44;border-radius:12px;padding:14px;margin-top:14px">';
+  h+='<div style="font-size:10px;color:#60a5fa;letter-spacing:2px;margin-bottom:10px">PROTOCOLO COMER FUERA</div>';
+  var fueraRules=['1. PROTEINA: carne/pescado/pollo a la plancha. Sin rebozados ni salsas cremosas.',
+    '2. CARBO: arroz blanco o patata cocida/horno. Sin pan ni fritos. Pide guarnicion aparte.',
+    '3. VERDURA LIBRE: ensalada o verdura plancha. Con vinagre y poco aceite.',
+    '4. ACEITE: pide que cocinen con poco. Un plato de restaurante suele triplicar el aceite.',
+    '5. ALCOHOL: cero. Agua con gas y limon si hay presion social.',
+    '6. POSTRE: fruta si hay. Si no — cafe y listo. No compensar al dia siguiente.'];
+  fueraRules.forEach(function(r,i){
+    h+='<div style="display:flex;gap:10px;margin-bottom:8px;align-items:flex-start">';
+    h+='<div style="width:20px;height:20px;border-radius:50%;background:#facc15;color:#000;font-size:10px;font-weight:900;display:flex;align-items:center;justify-content:center;flex-shrink:0">'+(i+1)+'</div>';
+    h+='<div style="font-size:12px;color:#aaa;line-height:1.5">'+r.substring(3)+'</div></div>';
+  });
+  h+='<div style="margin-top:8px;padding:10px;background:#111;border-radius:8px;font-size:11px;color:#facc15">Un mal dia no arruina el corte. Abandonar si lo hace.</div>';
+  h+='<button onclick="showCartaAnalyzer()" style="width:100%;margin-top:10px;padding:14px;background:linear-gradient(135deg,#1e3a5f,#1e4a7f);border:1px solid #60a5fa44;border-radius:10px;color:#60a5fa;font-size:13px;font-weight:700;cursor:pointer;letter-spacing:1px">&#129302; ANALIZAR CARTA CON IA</button>';
+  h+='</div>';
+  h+='<div id="cartaAnalyzer" style="display:none;margin-top:10px;background:#0a0f1a;border:1px solid #1e3a5f;border-radius:12px;padding:14px">';
+  h+='<div style="font-size:10px;color:#60a5fa;letter-spacing:2px;margin-bottom:8px">QUE PIDO HOY</div>';
+  h+='<textarea id="cartaInput" placeholder="Escribe los platos de la carta o describe el restaurante..." style="width:100%;background:#111;border:1px solid #222;border-radius:8px;color:#fff;padding:10px;font-size:13px;font-family:inherit;min-height:80px;resize:none;box-sizing:border-box"></textarea>';
+  h+='<button onclick="analizarCarta()" style="width:100%;margin-top:8px;padding:12px;background:#facc15;border:none;border-radius:8px;color:#000;font-size:13px;font-weight:900;cursor:pointer">ANALIZAR</button>';
+  h+='<div id="cartaResult" style="margin-top:10px;font-size:13px;color:#aaa;line-height:1.6"></div>';
+  h+='</div>';
+  
   document.getElementById('app').innerHTML=h;
   setTimeout(showNotifStatus,50);
 }
@@ -749,29 +772,8 @@ function rShop(){
     }
   });
   h+='<div class="tipcard"><span>Coach:</span><span>Compra para la semana entera de una vez. Ahorra tiempo y evita improvisar.</span></div>';
-    h+='<div style="background:#0a0f1a;border:1px solid #1e3a5f44;border-radius:12px;padding:14px;margin-top:14px">';
-  h+='<div style="font-size:10px;color:#60a5fa;letter-spacing:2px;margin-bottom:10px">PROTOCOLO COMER FUERA</div>';
-  var fueraRules=['1. PROTEINA: carne/pescado/pollo a la plancha. Sin rebozados ni salsas cremosas.',
-    '2. CARBO: arroz blanco o patata cocida/horno. Sin pan ni fritos. Pide guarnicion aparte.',
-    '3. VERDURA LIBRE: ensalada o verdura plancha. Con vinagre y poco aceite.',
-    '4. ACEITE: pide que cocinen con poco. Un plato de restaurante suele triplicar el aceite.',
-    '5. ALCOHOL: cero. Agua con gas y limon si hay presion social.',
-    '6. POSTRE: fruta si hay. Si no — cafe y listo. No compensar al dia siguiente.'];
-  fueraRules.forEach(function(r,i){
-    h+='<div style="display:flex;gap:10px;margin-bottom:8px;align-items:flex-start">';
-    h+='<div style="width:20px;height:20px;border-radius:50%;background:#facc15;color:#000;font-size:10px;font-weight:900;display:flex;align-items:center;justify-content:center;flex-shrink:0">'+(i+1)+'</div>';
-    h+='<div style="font-size:12px;color:#aaa;line-height:1.5">'+r.substring(3)+'</div></div>';
-  });
-  h+='<div style="margin-top:8px;padding:10px;background:#111;border-radius:8px;font-size:11px;color:#facc15">Un mal dia no arruina el corte. Abandonar si lo hace.</div>';
-  h+='<button onclick="showCartaAnalyzer()" style="width:100%;margin-top:10px;padding:14px;background:linear-gradient(135deg,#1e3a5f,#1e4a7f);border:1px solid #60a5fa44;border-radius:10px;color:#60a5fa;font-size:13px;font-weight:700;cursor:pointer;letter-spacing:1px">&#129302; ANALIZAR CARTA CON IA</button>';
-  h+='</div>';
-  h+='<div id="cartaAnalyzer" style="display:none;margin-top:10px;background:#0a0f1a;border:1px solid #1e3a5f;border-radius:12px;padding:14px">';
-  h+='<div style="font-size:10px;color:#60a5fa;letter-spacing:2px;margin-bottom:8px">QUE PIDO HOY</div>';
-  h+='<textarea id="cartaInput" placeholder="Escribe los platos de la carta o describe el restaurante..." style="width:100%;background:#111;border:1px solid #222;border-radius:8px;color:#fff;padding:10px;font-size:13px;font-family:inherit;min-height:80px;resize:none;box-sizing:border-box"></textarea>';
-  h+='<button onclick="analizarCarta()" style="width:100%;margin-top:8px;padding:12px;background:#facc15;border:none;border-radius:8px;color:#000;font-size:13px;font-weight:900;cursor:pointer">ANALIZAR</button>';
-  h+='<div id="cartaResult" style="margin-top:10px;font-size:13px;color:#aaa;line-height:1.6"></div>';
-  h+='</div>';
-  app.innerHTML=h;
+  
+app.innerHTML=h;
 }
 function togShop(i){D.shop=D.shop||{};D.shop[i]=!D.shop[i];sv();rShop()}
 function resetShop(){D.shop={};sv();rShop()}
